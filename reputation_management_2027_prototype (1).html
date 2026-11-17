@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reputation Management 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        space: '#061626',
+        space2: '#0B243E',
+        nurture: '#258CF4',
+        card: '#FFFFFF',
+        line: '#E2E8F0',
+        ink: '#0F172A',
+        inkMuted: '#64748B'
+      },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace']
+      }
+    }
+  }
+}
+</script>
+<style>
+* { box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #0F172A;
+  background-color: #F8FAFC;
+  -webkit-font-smoothing: antialiased;
+}
+.glass-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+  transition: all 0.2s ease;
+}
+.stars-gold { color: #F59E0B; letter-spacing: 2px; }
+.stars-gold i { font-style: normal; color: #CBD5E1; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+
+<!-- Top Bar (Clean Dual Persona & Identity Switcher) -->
+<header class="bg-white border-b border-slate-200 px-6 py-3 sticky top-0 z-30 flex items-center justify-between gap-4 shadow-sm">
+  <div class="flex items-center gap-3">
+    <div id="persona-badge-icon" class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-sm font-bold text-sm">
+      AG
+    </div>
+    <div>
+      <div class="flex items-center gap-2">
+        <h1 id="persona-title" class="font-bold text-slate-900 tracking-tight text-sm">Apex Growth Agency</h1>
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span id="persona-subtitle" class="text-[11px] text-slate-500 font-medium">80 Managed Locations</span>
+      </div>
+      <p id="persona-caption" class="text-[11px] text-slate-400">Consolidated Portfolio Performance & Exception Triage</p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <!-- Active Status Pill -->
+    <div class="hidden md:flex items-center gap-1.5 text-xs px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg border border-emerald-200 font-medium">
+      <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      <span>Visit-Linked Engine Live</span>
+    </div>
+
+    <!-- Mode Persona Switcher -->
+    <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+      <button onclick="switchPersona('agency')" id="btn-persona-agency" class="px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-900 shadow-sm transition-all">
+        Agency View
+      </button>
+      <button onclick="switchPersona('practice')" id="btn-persona-practice" class="px-3 py-1.5 rounded-lg font-semibold text-slate-500 hover:text-slate-900 transition-all">
+        Practice View (Brightside)
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="flex flex-1 min-h-[calc(100vh-65px)]">
+  <!-- Dynamic Left Navigation Based on Persona -->
+  <aside class="w-60 bg-white border-r border-slate-200 p-3.5 flex flex-col justify-between shrink-0">
+    <div class="space-y-4">
+      <div class="px-2">
+        <span id="nav-section-label" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Agency Workspace</span>
+      </div>
+      <nav class="space-y-1" id="nav-links">
+        <!-- Rendered via JS -->
+      </nav>
+    </div>
+
+    <!-- Quick Status Box -->
+    <div id="sidebar-status-box" class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1.5">
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-slate-800 text-[11px]" id="status-box-title">Portfolio Health</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      </div>
+      <p class="text-[11px] text-slate-500 leading-relaxed" id="status-box-desc">
+        80/80 accounts active. 2 critical recovery cases waiting for review.
+      </p>
+    </div>
+  </aside>
+
+  <!-- Main View Workspace -->
+  <main class="flex-1 p-6 sm:p-8 overflow-y-auto max-w-6xl mx-auto w-full" id="main-content">
+    <!-- View content rendered via JavaScript -->
+  </main>
+</div>
+
+<!-- Toast Root -->
+<div id="toast-root" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 items-center pointer-events-none"></div>
+
+<script>
+const state = {
+  persona: 'agency', // 'agency' | 'practice'
+  agencyTab: 'portfolio', // 'portfolio', 'focus', 'ai'
+  practiceTab: 'digest', // 'digest', 'recovery', 'ask', 'strengths', 'ai'
+  clientFilter: 'All',
+  meeraApproved: false,
+  meeraContacted: false,
+  reviewTone: 'Warm',
+  aiChatHistory: []
+};
+
+const agencyClients = [
+  { name: 'Brightside Dental', type: 'Dental', reviews: 299, linked: 78, openCases: 1, status: 'Needs Approval', priority: 'medium', level: 'Review 3★ or less' },
+  { name: 'Harbor Plumbing Co.', type: 'Home Services', reviews: 184, linked: 67, openCases: 2, status: 'Case Overdue', priority: 'high', level: 'Auto-Post 4-5★' },
+  { name: 'Glow Med Spa', type: 'Med Spa', reviews: 112, linked: 52, openCases: 1, status: 'Attention: Opt-outs', priority: 'medium', level: 'Review All (Regulated)' },
+  { name: 'Cedar Street Bistro', type: 'Hospitality', reviews: 432, linked: 41, openCases: 0, status: 'On Track', priority: 'low', level: 'Full Auto-Pilot' },
+  { name: 'Northgate Auto Care', type: 'Auto Care', reviews: 210, linked: 74, openCases: 0, status: 'On Track', priority: 'low', level: 'Auto-Post 4-5★' },
+  { name: 'Lakeview Physio', type: 'Healthcare', reviews: 98, linked: 84, openCases: 0, status: 'On Track', priority: 'low', level: 'Review All (Regulated)' }
+];
+
+const tones = {
+  Warm: "Thank you for telling us, Meera. Waiting without an explanation is not the standard we strive to deliver. We would really appreciate the opportunity to make this right—please give Sana a call on our main line so we can take care of you.",
+  Professional: "Thank you for sharing your feedback, Meera. We apologize for the delay during your visit on Tuesday and for not updating you at the time. Please contact our practice manager on our main office line.",
+  Brief: "Thank you for your feedback, Meera. We apologize for the wait time. Please call our practice manager directly so we can make this right."
+};
+
+function toast(msg) {
+  const root = document.querySelector('#toast-root');
+  const el = document.createElement('div');
+  el.className = 'bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-medium shadow-lg flex items-center gap-2 transform translate-y-2 opacity-0 transition-all duration-200 pointer-events-auto';
+  el.innerHTML = `<span>${msg}</span>`;
+  root.appendChild(el);
+  requestAnimationFrame(() => { el.classList.remove('translate-y-2', 'opacity-0'); });
+  setTimeout(() => {
+    el.classList.add('translate-y-2', 'opacity-0');
+    setTimeout(() => el.remove(), 200);
+  }, 2600);
+}
+
+function switchPersona(p) {
+  state.persona = p;
+  const isAgency = p === 'agency';
+  
+  // Update header styling & titles
+  document.querySelector('#persona-badge-icon').textContent = isAgency ? 'AG' : 'BD';
+  document.querySelector('#persona-badge-icon').className = isAgency 
+    ? 'w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-sm font-bold text-sm'
+    : 'w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white shadow-sm font-bold text-sm';
+  
+  document.querySelector('#persona-title').textContent = isAgency ? 'Apex Growth Agency' : 'Brightside Dental';
+  document.querySelector('#persona-subtitle').textContent = isAgency ? '80 Managed Client Accounts' : 'Single Practice Portal';
+  document.querySelector('#persona-caption').textContent = isAgency 
+    ? 'Consolidated Portfolio Performance & Exception Triage' 
+    : 'Dr. Rao, Dr. Lee & Staff · 4.8 ★ (299 verified reviews)';
+  
+  document.querySelector('#btn-persona-agency').className = isAgency 
+    ? 'px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-900 shadow-sm transition-all'
+    : 'px-3 py-1.5 rounded-lg font-semibold text-slate-500 hover:text-slate-900 transition-all';
+  
+  document.querySelector('#btn-persona-practice').className = !isAgency 
+    ? 'px-3 py-1.5 rounded-lg font-semibold bg-white text-slate-900 shadow-sm transition-all'
+    : 'px-3 py-1.5 rounded-lg font-semibold text-slate-500 hover:text-slate-900 transition-all';
+
+  document.querySelector('#nav-section-label').textContent = isAgency ? 'Agency Workspace' : 'Practice Operations';
+
+  document.querySelector('#status-box-title').textContent = isAgency ? 'Portfolio Health' : 'Auto-Pilot Status';
+  document.querySelector('#status-box-desc').textContent = isAgency 
+    ? '80/80 accounts active. 2 critical recovery cases waiting for attention.'
+    : 'Invites automated for 6:00 PM post-visit. 94% checkout sync active.';
+
+  renderNav();
+  renderView();
+}
+
+function renderNav() {
+  const nav = document.querySelector('#nav-links');
+  if (state.persona === 'agency') {
+    nav.innerHTML = `
+      <button onclick="setTab('portfolio')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold ${state.agencyTab === 'portfolio' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          <span>Portfolio Overview</span>
+        </div>
+        <span class="text-[10px] font-bold text-slate-400">80</span>
+      </button>
+
+      <button onclick="setTab('focus')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold ${state.agencyTab === 'focus' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <span>High-Focus Items</span>
+        </div>
+        <span class="px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">3</span>
+      </button>
+
+      <button onclick="setTab('ai')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold ${state.agencyTab === 'ai' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span class="font-bold">Reputation AI Agent</span>
+        </div>
+        <span class="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[9px] font-bold">Interactive</span>
+      </button>
+    `;
+  } else {
+    nav.innerHTML = `
+      <button onclick="setTab('digest')" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-semibold ${state.practiceTab === 'digest' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        <span>Weekly Digest</span>
+      </button>
+
+      <button onclick="setTab('recovery')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold ${state.practiceTab === 'recovery' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Reviews & Recovery</span>
+        </div>
+        <span class="w-5 h-5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold flex items-center justify-center">1</span>
+      </button>
+
+      <button onclick="setTab('ask')" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-semibold ${state.practiceTab === 'ask' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Patient Ask Queue</span>
+      </button>
+
+      <button onclick="setTab('strengths')" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-semibold ${state.practiceTab === 'strengths' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Confirmed Strengths</span>
+      </button>
+
+      <button onclick="setTab('ai')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold ${state.practiceTab === 'ai' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'text-slate-700 hover:bg-slate-50'}">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span class="font-bold">Reputation AI Agent</span>
+        </div>
+        <span class="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[9px] font-bold">Interactive</span>
+      </button>
+    `;
+  }
+}
+
+function setTab(t) {
+  if (state.persona === 'agency') {
+    state.agencyTab = t;
+  } else {
+    state.practiceTab = t;
+  }
+  renderNav();
+  renderView();
+}
+
+function renderView() {
+  const container = document.querySelector('#main-content');
+  if (state.persona === 'agency') {
+    if (state.agencyTab === 'portfolio') container.innerHTML = renderAgencyPortfolio();
+    else if (state.agencyTab === 'focus') container.innerHTML = renderAgencyFocus();
+    else if (state.agencyTab === 'ai') container.innerHTML = renderAiWorkspace();
+  } else {
+    if (state.practiceTab === 'digest') container.innerHTML = renderPracticeDigest();
+    else if (state.practiceTab === 'recovery') container.innerHTML = renderPracticeRecovery();
+    else if (state.practiceTab === 'ask') container.innerHTML = renderPracticeAsk();
+    else if (state.practiceTab === 'strengths') container.innerHTML = renderPracticeStrengths();
+    else if (state.practiceTab === 'ai') container.innerHTML = renderAiWorkspace();
+  }
+}
+
+/* =========================================================================
+   AGENCY VIEWS: CONSOLIDATED PERFORMANCE & HIGH-FOCUS ITEMS ONLY
+   ========================================================================= */
+
+function renderAgencyPortfolio() {
+  const filtered = agencyClients.filter(c => state.clientFilter === 'All' || c.priority === state.clientFilter);
+
+  return `
+    <div class="space-y-6">
+      <!-- Consolidated Agency KPI Strip -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass-card p-4 rounded-xl">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total Managed Accounts</span>
+          <div class="text-2xl font-bold text-slate-900 mt-1">80</div>
+          <span class="text-[11px] text-emerald-600 font-medium mt-0.5 block">100% Onboarded</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Avg. Visit Linkage</span>
+          <div class="text-2xl font-bold text-slate-900 mt-1">68.4%</div>
+          <span class="text-[11px] text-blue-600 font-medium mt-0.5 block">+14.2% vs last quarter</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Open Recovery Cases</span>
+          <div class="text-2xl font-bold text-amber-600 mt-1">4</div>
+          <span class="text-[11px] text-slate-500 font-medium mt-0.5 block">2 Require Account Rep Triage</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Estimated Revenue Lift</span>
+          <div class="text-2xl font-bold text-slate-900 mt-1">$48.2k</div>
+          <span class="text-[11px] text-slate-500 font-medium mt-0.5 block">30-day range across clients</span>
+        </div>
+      </div>
+
+      <!-- Portfolio Table & Quick Filter -->
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
+          <div>
+            <h3 class="font-bold text-sm text-slate-900">Client Portfolio Performance</h3>
+            <p class="text-xs text-slate-500">Sorted by attention exception. Only items requiring action surfaced.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            ${['All', 'high', 'medium', 'low'].map(f => `
+              <button onclick="setClientFilter('${f}')" class="px-2.5 py-1 text-xs rounded-lg font-semibold capitalize ${state.clientFilter === f ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">
+                ${f === 'All' ? 'All (80)' : f + ' priority'}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[11px]">
+              <tr>
+                <th class="p-3.5">Client Location</th>
+                <th class="p-3.5">Vertical</th>
+                <th class="p-3.5 text-right">30d Reviews</th>
+                <th class="p-3.5 text-right">Visit-Linked</th>
+                <th class="p-3.5">Status Flag</th>
+                <th class="p-3.5">Autonomy Rule</th>
+                <th class="p-3.5 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              ${filtered.map(c => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                  <td class="p-3.5 font-bold text-slate-900">${c.name}</td>
+                  <td class="p-3.5 text-slate-600">${c.type}</td>
+                  <td class="p-3.5 text-right font-medium text-slate-800">${c.reviews}</td>
+                  <td class="p-3.5 text-right font-semibold ${c.linked > 70 ? 'text-emerald-700' : 'text-blue-700'}">${c.linked}%</td>
+                  <td class="p-3.5">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      c.priority === 'high' ? 'bg-red-50 text-red-700 border border-red-200' :
+                      c.priority === 'medium' ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                      'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                    }">${c.status}</span>
+                  </td>
+                  <td class="p-3.5 text-slate-600">${c.level}</td>
+                  <td class="p-3.5 text-right">
+                    <button onclick="inspectClient('${c.name}')" class="px-2.5 py-1 text-[11px] font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded">
+                      Inspect
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAgencyFocus() {
+  return `
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900">High-Focus Triage Queue</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Exceptions across your 80 locations requiring human review before the week closes.</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Item 1: Harbor Plumbing Overdue -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-red-500 space-y-3">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 uppercase tracking-wide">Negative Review Overdue (31h)</span>
+              <h3 class="font-bold text-sm text-slate-900 mt-1">Harbor Plumbing Co. · 1★ From Jordan P.</h3>
+              <p class="text-xs text-slate-600 mt-0.5">"Tech arrived two hours late and kitchen leak returned next day." Record shows tech Luis arrived at 3:40 PM (window 1-3 PM).</p>
+            </div>
+            <button onclick="toast('Harbor Plumbing response approved & sent to customer text')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm">
+              Approve Re-dispatch Draft
+            </button>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl text-xs text-slate-700 flex items-center justify-between">
+            <span><strong>Suggested Remedy:</strong> Senior tech Luis re-inspection at $0 charge.</span>
+            <span class="text-slate-400 text-[11px]">Assigned to: Dispatcher Dave</span>
+          </div>
+        </div>
+
+        <!-- Item 2: Glow Med Spa Opt-outs -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-amber-500 space-y-3">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-wide">Consent & Opt-Out Guardrail</span>
+              <h3 class="font-bold text-sm text-slate-900 mt-1">Glow Med Spa · SMS Opt-Out Rate at 1.4% (Threshold: 1.0%)</h3>
+              <p class="text-xs text-slate-600 mt-0.5">Asks are being delivered too quickly post-treatment (day 1 vs day 5). Agent throttled auto-sending.</p>
+            </div>
+            <button onclick="toast('Glow Med Spa delay adjusted to 5 days post-treatment')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-sm">
+              Adjust Delay to Day 5
+            </button>
+          </div>
+        </div>
+
+        <!-- Item 3: Brightside Dental Wait Time -->
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-blue-500 space-y-3">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wide">Client Approval Waiting</span>
+              <h3 class="font-bold text-sm text-slate-900 mt-1">Brightside Dental · Meera K. (2★) Wait Time Reply</h3>
+              <p class="text-xs text-slate-600 mt-0.5">Drafted warm apology with zero clinical disclosures to preserve HIPAA compliance.</p>
+            </div>
+            <button onclick="switchPersona('practice'); setTab('recovery');" class="px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-slate-800 font-semibold text-xs rounded-lg">
+              Open Practice View
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   PRACTICE VIEWS: END USER (BRIGHTSIDE DENTAL)
+   ========================================================================= */
+
+function renderPracticeDigest() {
+  return `
+    <div class="space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Monday Morning Owner Digest</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Delivered by text message to Dr. Rao & Sana every Monday at 8:30 AM</p>
+        </div>
+        <button onclick="toast('Test SMS sent to Practice Manager phone')" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-xs font-semibold text-slate-700">Send Test SMS</button>
+      </div>
+
+      <div class="max-w-xl mx-auto glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex items-center gap-2 pb-3 border-b border-slate-100 text-xs text-slate-400">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <span>SMS from Reputation Agent · Today 8:30 AM</span>
+        </div>
+
+        <div class="space-y-3">
+          <div class="p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl space-y-1">
+            <span class="text-[10px] font-bold text-blue-700 uppercase tracking-wider">1. What You Are Known For</span>
+            <p class="text-xs text-slate-800 font-medium">Personal attention. 5 of your 9 reviews this week specifically named Dr. Lee or the front desk greeting patients warmly by name.</p>
+          </div>
+
+          <div class="p-3.5 bg-amber-50/70 border border-amber-100 rounded-xl space-y-2">
+            <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">2. One Thing To Fix</span>
+            <p class="text-xs text-slate-800 font-medium">Wait times came up in 4 reviews—all occurred on Tuesday afternoon when hygienist coverage was down by one person.</p>
+            <button onclick="toast('Task assigned to Sana to adjust Tuesday hygiene rota')" class="text-xs bg-white hover:bg-slate-50 border border-amber-200 text-amber-900 font-semibold px-3 py-1.5 rounded-lg shadow-sm">Assign Rota Review to Sana</button>
+          </div>
+
+          <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">3. One Reply To Approve</span>
+              <span class="text-[10px] text-slate-400">Meera K. (2 Stars)</span>
+            </div>
+            <p class="text-xs text-slate-700 italic">"${tones[state.reviewTone]}"</p>
+            <div class="flex items-center gap-2 pt-1">
+              <button onclick="approveReplyFromDigest()" ${state.meeraApproved ? 'disabled' : ''} class="text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-lg shadow-sm">
+                ${state.meeraApproved ? '✓ Approved & Live on Google' : '1-Click Approve'}
+              </button>
+              <button onclick="setTab('recovery')" class="text-xs text-slate-600 hover:text-slate-900 font-semibold px-2 py-1">Customize Response</button>
+            </div>
+          </div>
+
+          <div class="p-3.5 bg-emerald-50/70 border border-emerald-100 rounded-xl space-y-1">
+            <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">4. One Result</span>
+            <p class="text-xs text-slate-800 font-medium">9 new verified reviews posted this week (7 linked to calendar checkouts). Estimated <strong>3 to 6 new appointment bookings</strong> driven this month.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPracticeRecovery() {
+  return `
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900">Review Recovery & Customer Care</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Live reviews posted to Google. Address negative feedback with safe, pre-screened outreach.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div class="md:col-span-1 glass-card p-5 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-slate-900">Meera K.</span>
+            <span class="stars-gold">★★<i>★★★</i></span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed font-normal">
+            "Lovely staff but I waited 40 minutes past my appointment time and nobody told me why. I had to rearrange my afternoon."
+          </p>
+          <div class="pt-2 border-t border-slate-100 text-[11px] text-slate-400">
+            Posted 2 hours ago · Crown Fitting with Dr. Rao
+          </div>
+          <div class="p-2.5 rounded-lg bg-blue-50 border border-blue-100 text-[11px] text-blue-900">
+            <strong>Calendar Record:</strong> Checked in 4:28 pm, seen 5:09 pm (41m wait time recorded).
+          </div>
+        </div>
+
+        <div class="md:col-span-2 glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm text-slate-900">Respond & Resolve</h3>
+            <div class="flex items-center gap-1">
+              ${['Warm', 'Professional', 'Brief'].map(t => `
+                <button onclick="setTone('${t}')" class="px-2.5 py-1 text-xs rounded-md font-medium ${state.reviewTone === t ? 'bg-blue-100 text-blue-800 font-bold' : 'text-slate-600 hover:bg-slate-100'}">${t}</button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-slate-700">Public Response (Appears on Google)</label>
+            <textarea id="reply-box" rows="3" class="w-full text-xs p-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 leading-relaxed">${tones[state.reviewTone]}</textarea>
+          </div>
+
+          <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between text-xs text-emerald-900">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Safe for Healthcare: Does not confirm patient status or clinical details.</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Compliant</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+            <button onclick="sendPrivateText()" ${state.meeraContacted ? 'disabled' : ''} class="w-full sm:w-auto px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded-lg text-xs font-semibold text-slate-700">
+              ${state.meeraContacted ? '✓ Private Text Sent' : 'Send Private Apology SMS'}
+            </button>
+            <button onclick="approvePublic()" ${state.meeraApproved ? 'disabled' : ''} class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-sm">
+              ${state.meeraApproved ? '✓ Published to Google' : 'Post Reply to Google'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPracticeAsk() {
+  const queue = [
+    { name: 'Daniel O.', visit: 'Cleaning with Nina · 11:20 AM', delay: 'Today at 6:00 PM', channel: 'Email (no SMS consent)', status: 'Scheduled' },
+    { name: 'Priya S.', visit: 'Filling with Dr. Lee · 2:40 PM', delay: 'On Hold (billing thread open)', channel: 'SMS', status: 'Paused' },
+    { name: 'Tom W.', visit: 'Check-up with Dr. Lee · 10:15 AM', delay: 'Sent at 12:15 PM (Holdout group)', channel: 'SMS', status: 'Sent' }
+  ];
+
+  return `
+    <div class="space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Today's Patient Invites</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Automatic visit-triggered requests sent at optimal response hours</p>
+        </div>
+        <span class="text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-1 rounded-lg border border-emerald-200">Timing Optimizer Running</span>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden divide-y divide-slate-100">
+        ${queue.map(q => `
+          <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+            <div class="space-y-0.5">
+              <div class="font-semibold text-xs text-slate-900">${q.name}</div>
+              <div class="text-[11px] text-slate-500">${q.visit}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-medium text-slate-800">${q.delay}</div>
+              <div class="text-[11px] text-slate-400">${q.channel}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="p-4 bg-blue-50/60 border border-blue-200 rounded-xl text-xs text-blue-900 leading-relaxed">
+        <strong>Automatic Policy:</strong> Dental patients receive their invite the same evening at 6:00 PM when at home. If a patient contacts the front desk with an open billing question, asks are automatically held until the issue is solved.
+      </div>
+    </div>
+  `;
+}
+
+function renderPracticeStrengths() {
+  return `
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900">What Brightside Dental is Known For</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Extracted from 299 verified patient reviews and backed by appointment records</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-emerald-500 space-y-3">
+          <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Top Confirmed Strength</span>
+          <h3 class="font-bold text-base text-slate-900">Personal & Attentive Care</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Patients repeatedly mention being remembered by name and feeling at ease. 22 recent reviews specifically highlight Dr. Lee and the front desk reception team.
+          </p>
+          <div class="p-3 bg-slate-50 rounded-xl text-[11px] text-slate-700 italic border border-slate-200">
+            "Dr. Lee remembered my daughter's braces checkup and took time to explain everything. Never felt like a number."
+          </div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-blue-500 space-y-3">
+          <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">Secondary Strength</span>
+          <h3 class="font-bold text-base text-slate-900">Gentle & Painless Procedures</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Praise for gentle cleanings and painless crown fittings. Correlates with 28% higher recall booking retention for Nina.
+          </p>
+          <div class="p-3 bg-slate-50 rounded-xl text-[11px] text-slate-700 italic border border-slate-200">
+            "First time I didn't dread the dentist. Nina was gentle and thorough."
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   FIRST-CLASS FULL-TAB AI AGENT INTERFACE (MAIN TAB)
+   ========================================================================= */
+
+function renderAiWorkspace() {
+  const isAgency = state.persona === 'agency';
+
+  return `
+    <div class="space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span>Reputation AI Agent</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 uppercase">Interactive Workspace</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            ${isAgency 
+              ? 'Execute portfolio-wide audits, analyze exceptions across 80 accounts, or query compliance policies.' 
+              : 'Ask questions about patient review patterns, timing rules, or draft safe customer responses.'}
+          </p>
+        </div>
+        <button onclick="clearChat()" class="text-xs text-slate-500 hover:text-slate-800 font-semibold px-2.5 py-1 rounded border border-slate-200">
+          Clear Conversation
+        </button>
+      </div>
+
+      <!-- Quick Action Prompt Pills -->
+      <div class="glass-card p-3.5 rounded-xl bg-slate-50/70 border border-slate-200">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Recommended Queries</span>
+        <div class="flex flex-wrap gap-2">
+          ${isAgency ? `
+            <button onclick="runAiCommand('Summarize open recovery exceptions across all 80 locations')" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm">
+              Triage Open Exceptions
+            </button>
+            <button onclick="runAiCommand('Check FTC 16 CFR Part 465 compliance across client workflows')" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm">
+              Run FTC Compliance Scan
+            </button>
+            <button onclick="runAiCommand('Explain the 10% holdout group conversion lift methodology')" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm">
+              Review Holdout Methodology
+            </button>
+          ` : `
+            <button onclick="runAiCommand('Explain Meera K. review and why the draft response is HIPAA safe')" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm">
+              Review Meera's Feedback
+            </button>
+            <button onclick="runAiCommand('Why do dental review invites go out at 6:00 PM instead of immediate checkout?')" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm">
+              Why 6:00 PM Send Time?
+            </button>
+            <button onclick="runAiCommand('What are patients praising most about Dr. Rao and staff?')" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 shadow-sm">
+              What Are Patients Praising?
+            </button>
+          `}
+        </div>
+      </div>
+
+      <!-- Main Agent Conversation Stream -->
+      <div class="glass-card rounded-2xl p-5 min-h-[380px] max-h-[500px] overflow-y-auto space-y-4" id="ai-main-chat">
+        <!-- Initial System Greeting -->
+        <div class="flex items-start gap-3">
+          <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+            AI
+          </div>
+          <div class="bg-slate-100 rounded-2xl rounded-tl-sm p-4 text-xs text-slate-800 space-y-2 max-w-2xl leading-relaxed">
+            <p class="font-bold text-slate-900">
+              ${isAgency 
+                ? 'Welcome back, Apex Growth Account Manager.' 
+                : 'Good morning, Brightside Practice Team.'}
+            </p>
+            <p>
+              ${isAgency 
+                ? 'I am monitoring all 80 connected sub-accounts. There are currently 2 high-priority items requiring attention: Harbor Plumbing has an overdue 1-star case (31 hours elapsed), and Glow Med Spa has an SMS opt-out rate of 1.4% due to early sends.' 
+                : 'I am running your practice ask engine. 12 review invites are scheduled for this evening at 6:00 PM. 1 negative review from Meera K. is ready for your 1-click approval.'}
+            </p>
+          </div>
+        </div>
+
+        <!-- Dynamic History -->
+        ${state.aiChatHistory.map(item => `
+          <div class="flex items-start justify-end gap-2">
+            <div class="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-sm text-xs font-medium max-w-xl">
+              ${item.q}
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+              AI
+            </div>
+            <div class="bg-slate-100 rounded-2xl rounded-tl-sm p-4 text-xs text-slate-800 space-y-2 max-w-2xl leading-relaxed">
+              ${item.a}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Prompt Input Field -->
+      <div class="glass-card p-3 rounded-2xl flex items-center gap-2">
+        <input type="text" id="ai-tab-input" onkeydown="if(event.key==='Enter')handleAiMainInput()" placeholder="Ask the Reputation AI Agent a question or request an action..." class="flex-1 text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <button onclick="handleAiMainInput()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all">
+          Execute
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function handleAiMainInput() {
+  const inp = document.querySelector('#ai-tab-input');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  runAiCommand(txt);
+}
+
+function runAiCommand(cmd) {
+  let answer = "Command processed. No unexpected anomalies detected across current records.";
+  const lower = cmd.toLowerCase();
+
+  if (lower.includes('ftc') || lower.includes('compliance')) {
+    answer = `<strong>FTC 16 CFR Part 465 Compliance Audit:</strong><br>All 80 locations have retired rating pre-screens. Every solicited customer receives the direct Google review link. In parallel, reviews of 3★ or less open private resolution cases. Zero accounts at risk of the $53,088 per-violation statutory penalty.`;
+  } else if (lower.includes('summarize') || lower.includes('exception') || lower.includes('triage')) {
+    answer = `<strong>Consolidated Exceptions Summary:</strong><br>• <strong>Harbor Plumbing:</strong> 1★ review regarding technician lateness (overdue by 7h against 24h SLA). Suggested remedy: $0 senior tech inspection.<br>• <strong>Glow Med Spa:</strong> Opt-out spike at 1.4%. Recommendation: Change starting delay from 24h to 5 days post-procedure.<br>• <strong>Brightside Dental:</strong> 2★ review regarding Tuesday wait time awaiting 1-click owner approval.`;
+  } else if (lower.includes('holdout') || lower.includes('methodology')) {
+    answer = `<strong>Holdout Group Methodology:</strong><br>A persistent 10% sample of completed appointments receives the legacy 2-hour delay instead of the optimized 6:00 PM timing. Current data shows the agent timing delivers <strong>21.8% conversion</strong> versus <strong>14.1% in the holdout</strong> (+55% relative lift).`;
+  } else if (lower.includes('meera')) {
+    answer = `<strong>Meera K. Case Breakdown:</strong><br>Meera rated 2 stars citing a 41-minute wait on Tuesday. Records verify check-in at 4:28 PM and chair time at 5:09 PM. The response draft is strictly HIPAA compliant because it does not acknowledge patient relationship or clinical procedures in the public response.`;
+  } else if (lower.includes('6:00') || lower.includes('6pm') || lower.includes('time') || lower.includes('delay')) {
+    answer = `<strong>Timing Optimization Rule:</strong><br>Sending review requests immediately after checkout results in low conversion because patients are traveling or returning to work. Sending at 6:00 PM catches patients relaxed at home, yielding a 55% higher completion rate without triggering SMS opt-outs.`;
+  } else if (lower.includes('praising') || lower.includes('strength') || lower.includes('dr. rao')) {
+    answer = `<strong>Verified Practice Strengths:</strong><br>Patients consistently praise <em>Personal Attention</em>. 22 recent verified reviews specifically mention Dr. Lee remembering family members and the front desk being welcoming and unhurried.`;
+  }
+
+  state.aiChatHistory.push({ q: cmd, a: answer });
+  renderView();
+
+  const chat = document.querySelector('#ai-main-chat');
+  if (chat) chat.scrollTop = chat.scrollHeight;
+}
+
+function clearChat() {
+  state.aiChatHistory = [];
+  renderView();
+}
+
+function setClientFilter(f) {
+  state.clientFilter = f;
+  renderView();
+}
+
+function inspectClient(name) {
+  if (name === 'Brightside Dental') {
+    switchPersona('practice');
+  } else {
+    toast(`Opening deep inspection for ${name}`);
+  }
+}
+
+function setTone(t) {
+  state.reviewTone = t;
+  renderView();
+}
+
+function approveReplyFromDigest() {
+  state.meeraApproved = true;
+  toast('Reply published to Google Business Profile');
+  renderView();
+}
+
+function approvePublic() {
+  state.meeraApproved = true;
+  toast('Response published to Google Business Profile');
+  renderView();
+}
+
+function sendPrivateText() {
+  state.meeraContacted = true;
+  toast('Private apology SMS sent to Meera');
+  renderView();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  switchPersona('agency');
+});
+</script>
+</body>
+</html>
